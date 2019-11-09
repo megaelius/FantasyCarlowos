@@ -96,9 +96,9 @@ void parameters (int& N1, int& N2, int& N3, int& T, int& J) {
     in.close();
 }
 
-bool valid (const Jugador& j, const vector<Jugador>& v, int J){
+bool valid (const Jugador& j, const vector<Jugador>& v, int J, int Preu, int T){
     for(Jugador k : v) if(k == j)return false;
-    return j.preu <= J;
+    return j.preu <= J and Preu+j.preu <= T;
 }
 
 void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
@@ -176,12 +176,10 @@ int main(int argc, char** argv) {
 
     database_reader(Vpor,Vdef,Vmig,Vdav);
 
-    cout << "leido" << endl;
     int N1,N2,N3,T,J;
 
     parameters(N1,N2,N3,T,J);
 
-    cout << N1 << N2 << N3 << T << J << endl;
     vector<Jugador> por_sol;
     vector<Jugador> def_sol;
     vector<Jugador> mig_sol;
@@ -190,5 +188,4 @@ int main(int argc, char** argv) {
     generate_exh(Vpor, Vdef, Vmig, Vdav,
                  por_sol, def_sol, mig_sol, dav_sol,
                  1, N1, N2, N3, T, J, 0, 0, 0);
-    cout << "acabado" << endl;
 }
