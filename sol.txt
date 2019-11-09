@@ -1,0 +1,7 @@
+181.0
+POR: Adán
+DEF: San José;Balenziaga;Lekue
+MIG: Córdoba;Vesga;Aleñá;Anuar
+DAV: Carlos Fernández;Fake_str5;Piatti
+Punts: 504
+Preu: 6310972

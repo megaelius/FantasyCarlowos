@@ -3,25 +3,32 @@
 #include <vector>
 #include <fstream>
 #include <cassert>
-#include <ctime>
+#include <time.h>
 using namespace std;
 
 struct Jugador{
-    string nom, posicio, club;
-    int punts, preu;
+    string nom;
+    string posicio;
+    string club;
+    int punts;
+    int preu;
+
+    bool operator==(const Jugador x){
+        return nom == x.nom and posicio == x.posicio and
+               club == x.club and punts == x.punts and preu == x.preu;
+    }
 };
 
-time_t start;
-time(&start);
+time_t start = time(0);
 string data_base;
 string outputFile;
 string requirementsFile;
 
-void write_position(ofstream& out, const vector<Player>& vpos) {
+void write_position(ofstream& out, const vector<Jugador>& vpos) {
     int n = vpos.size();
     for(int i = 0; i < n; ++i){
-        if(i != 0) out << ';'
-        out << vpos[i].nom
+        if(i != 0) out << ';';
+        out << vpos[i].nom;
     }
     out << endl;
 }
@@ -34,19 +41,18 @@ void overwrite_solution (const vector<Jugador>& por,const vector<Jugador>& def,
     out.setf(ios::fixed);
     out.precision(1);
 
-    time_t end;
-    time(&end)
+    time_t end = time(0);
     double time_taken = double(end - start);
 
     out << time_taken << endl;
     out << "POR: ";
-    write_position(por);
+    write_position(out,por);
     out << "DEF: ";
-    write_position(def);
+    write_position(out,def);
     out << "MIG: ";
-    write_position(mig);
+    write_position(out,mig);
     out << "DAV: ";
-    write_position(dav);
+    write_position(out,dav);
     out << "Punts: " << Punts << endl;
     out << "Preu: " << Preu << endl;
 
@@ -55,8 +61,10 @@ void overwrite_solution (const vector<Jugador>& por,const vector<Jugador>& def,
 
 void database_reader (vector<Jugador>& por, vector<Jugador>& def,
                         vector<Jugador>& mig, vector<Jugador>& dav) {
+
     ifstream in(data_base);
 
+    Jugador J;
     while (not in.eof()) {
         string nom, posicio, club;
         int punts, preu;
@@ -68,33 +76,38 @@ void database_reader (vector<Jugador>& por, vector<Jugador>& def,
         in >> punts;
         string aux2;
         getline(in,aux2);
-
-        if (pos == "por") por.push_back(Jugador{nom, pos, club, punts, preu});
-        else if (pos == "def") def.push_back(Jugador{nom, pos, club, punts, preu});
-        else if (pos == "mig") mig.push_back(Jugador{nom, pos, club, punts, preu});
-        else dav.push_back(Jugador{nom, pos, club, punts, preu});
+        J.nom = nom;
+        J.posicio = posicio;
+        J.club = club;
+        J.punts = punts;
+        J.preu = preu;
+        if (posicio == "por") por.push_back(J);
+        else if (posicio == "def") def.push_back(J);
+        else if (posicio == "mig") mig.push_back(J);
+        else dav.push_back(J);
     }
 
     in.close();
-    }
+}
 
 void parameters (int& N1, int& N2, int& N3, int& T, int& J) {
     ifstream in(requirementsFile);
     in >> N1 >> N2 >> N3 >> T >> J;
+    in.close();
 }
 
-bool valid (Const Jugador& j, const vector<Jugador>& v, int J){
+bool valid (const Jugador& j, const vector<Jugador>& v, int J){
     for(Jugador k : v) if(k == j)return false;
     return j.preu <= J;
 }
 
 void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
                     const vector<Jugador>& Vmig,const vector<Jugador>& Vdav,
-                    vector<Jugador>& por_sol, vector<Jugador>& mig_sol,
-                    vector<Jugador>& dav_sol, int N0, int N1, int N2, int N3,
+                    vector<Jugador>& por_sol, vector<Jugador>& def_sol,
+                    vector<Jugador>& mig_sol, vector<Jugador>& dav_sol, int N0, int N1, int N2, int N3,
                     int T, int J, int Punts, int Preu, int max_Punts) {
 
-    if(N0 == N1 == N2 == N3 == 0) {
+    if(N0 == 0 and N1 == 0 and N2 == 0 and N3 == 0) {
         if (Punts > max_Punts and Preu <= T) {
             overwrite_solution(por_sol,def_sol,mig_sol,dav_sol,Punts,Preu);
         }
@@ -156,17 +169,19 @@ int main(int argc, char** argv) {
     outputFile = argv[2];
     requirementsFile = argv[3];
 
-    vector<Jugador> Vpor;
-    vector<Jugador> Vdef;
-    vector<Jugador> Vmig;
-    vector<Jugador> Vdav;
+    vector<Jugador> Vpor(0);
+    vector<Jugador> Vdef(0);
+    vector<Jugador> Vmig(0);
+    vector<Jugador> Vdav(0);
 
     database_reader(Vpor,Vdef,Vmig,Vdav);
 
+    cout << "leido" << endl;
     int N1,N2,N3,T,J;
 
     parameters(N1,N2,N3,T,J);
 
+    cout << N1 << N2 << N3 << T << J << endl;
     vector<Jugador> por_sol;
     vector<Jugador> def_sol;
     vector<Jugador> mig_sol;
@@ -175,4 +190,5 @@ int main(int argc, char** argv) {
     generate_exh(Vpor, Vdef, Vmig, Vdav,
                  por_sol, def_sol, mig_sol, dav_sol,
                  1, N1, N2, N3, T, J, 0, 0, 0);
+    cout << "acabado" << endl;
 }
