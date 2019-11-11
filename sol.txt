@@ -1,7 +1,7 @@
-181.0
+11.0
 POR: Adán
 DEF: San José;Balenziaga;Lekue
-MIG: Córdoba;Vesga;Aleñá;Anuar
-DAV: Carlos Fernández;Fake_str5;Piatti
-Punts: 504
-Preu: 6310972
+MIG: Córdoba;Vesga;Granero;Maksimovic
+DAV: Sobrino;Enes Ünal;Kike García
+Punts: 890
+Preu: 7472260

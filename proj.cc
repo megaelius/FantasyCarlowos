@@ -105,15 +105,16 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
                     const vector<Jugador>& Vmig,const vector<Jugador>& Vdav,
                     vector<Jugador>& por_sol, vector<Jugador>& def_sol,
                     vector<Jugador>& mig_sol, vector<Jugador>& dav_sol, int N0, int N1, int N2, int N3,
-                    int T, int J, int Punts, int Preu, int max_Punts) {
+                    int T, int J, int Punts, int Preu, int& max_Punts) {
 
     if(N0 == 0 and N1 == 0 and N2 == 0 and N3 == 0) {
         if (Punts > max_Punts and Preu <= T) {
+            max_Punts = Punts;
             overwrite_solution(por_sol,def_sol,mig_sol,dav_sol,Punts,Preu);
         }
     } else if(N0 > 0){
         for(Jugador P : Vpor){
-            if(valid(P,por_sol,J)) {
+            if(valid(P,por_sol,J,Preu,T)) {
                 por_sol.push_back(P);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
@@ -124,7 +125,7 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
         }
     } else if (N1 > 0){
         for(Jugador D : Vdef){
-            if(valid(D,def_sol,J)) {
+            if(valid(D,def_sol,J,Preu,T)) {
                 def_sol.push_back(D);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
@@ -135,7 +136,7 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
         }
     } else if(N2 > 0){
         for(Jugador M : Vmig){
-            if(valid(M,mig_sol,J)) {
+            if(valid(M,mig_sol,J,Preu,T)) {
                 mig_sol.push_back(M);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
@@ -146,7 +147,7 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
         }
     } else {
         for(Jugador D : Vdav){
-            if(valid(D,dav_sol,J)) {
+            if(valid(D,dav_sol,J,Preu,T)) {
                 dav_sol.push_back(D);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
@@ -166,8 +167,8 @@ int main(int argc, char** argv) {
     }
 
     data_base = argv[1];
-    outputFile = argv[2];
-    requirementsFile = argv[3];
+    outputFile = argv[3];
+    requirementsFile = argv[2];
 
     vector<Jugador> Vpor(0);
     vector<Jugador> Vdef(0);
@@ -185,7 +186,8 @@ int main(int argc, char** argv) {
     vector<Jugador> mig_sol;
     vector<Jugador> dav_sol;
 
+    int max_Punts = -1;
     generate_exh(Vpor, Vdef, Vmig, Vdav,
                  por_sol, def_sol, mig_sol, dav_sol,
-                 1, N1, N2, N3, T, J, 0, 0, 0);
+                 1, N1, N2, N3, T, J, 0, 0, max_Punts);
 }
