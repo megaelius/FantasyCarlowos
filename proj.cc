@@ -24,7 +24,7 @@ struct Jugador{
     }
 };
 
-time_t start = time(0);
+clock_t start = clock();
 string data_base;
 string outputFile;
 string requirementsFile;
@@ -46,8 +46,8 @@ void overwrite_solution (const vector<Jugador>& por,const vector<Jugador>& def,
     out.setf(ios::fixed);
     out.precision(1);
 
-    time_t end = time(0);
-    double time_taken = double(end - start);
+    clock_t end = clock();
+    double time_taken = double(end - start)/CLOCKS_PER_SEC;
 
     out << time_taken << endl;
     out << "POR: ";
