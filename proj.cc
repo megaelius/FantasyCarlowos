@@ -191,7 +191,7 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
 int main(int argc, char** argv) {
     if (argc != 4) {
         cout << "Syntax: " << argv[0] << " data_base.txt"
-        << " output_file.txt" << "requirements_file.txt" << endl;
+        << " requirements_file.txt" << "output_file.txt" << endl;
         exit(1);
     }
 
