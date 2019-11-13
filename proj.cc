@@ -117,7 +117,8 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
                     const vector<Jugador>& Vmig,const vector<Jugador>& Vdav,
                     vector<Jugador>& por_sol, vector<Jugador>& def_sol,
                     vector<Jugador>& mig_sol, vector<Jugador>& dav_sol, int N0, int N1, int N2, int N3,
-                    int T, int Punts, int Preu, int& max_Punts, int max_individual) {
+                    int T, int Punts, int Preu, int& max_Punts, int max_individual,
+                    int idef, int imig, int idav) {
 
     if(N0 == 0 and N1 == 0 and N2 == 0 and N3 == 0) {
         if (Punts > max_Punts and Preu <= T) {
@@ -125,50 +126,62 @@ void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
             overwrite_solution(por_sol,def_sol,mig_sol,dav_sol,Punts,Preu);
         }
     } else if (N0 > 0){
-        for(Jugador P : Vpor){
+        int t = Vpor.size();
+        for(int i = 0; i < t; ++i){
+            Jugador P = Vpor[i];
             if (Preu+P.preu > T) return;
             else if(valid(P,por_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts)) {
                 por_sol.push_back(P);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
                             N0-1, N1, N2, N3, T,
-                            Punts+P.punts, Preu+P.preu, max_Punts, max_individual);
+                            Punts+P.punts, Preu+P.preu, max_Punts, max_individual,
+                            idef,imig,idav);
                 por_sol.pop_back();
             }
         }
     } else if (N1 > 0){
-        for(Jugador D : Vdef){
+        int t = Vdef.size();
+        for(int i = idef + 1; i < t; ++i){
+            Jugador D = Vdef[i];
             if (Preu+D.preu > T) return;
             else if(valid(D,def_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts)) {
                 def_sol.push_back(D);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
                             N0, N1-1, N2, N3, T,
-                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual);
+                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual,
+                            i,imig,idav);
                 def_sol.pop_back();
             }
         }
     } else if (N2 > 0){
-        for(Jugador M : Vmig){
+        int t = Vmig.size();
+        for(int i = imig + 1; i < t; ++i){
+            Jugador M = Vmig[i];
             if (Preu+M.preu > T) return;
             else if(valid(M,mig_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts)) {
                 mig_sol.push_back(M);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
                             N0, N1, N2-1, N3, T,
-                            Punts+M.punts, Preu+M.preu, max_Punts, max_individual);
+                            Punts+M.punts, Preu+M.preu, max_Punts, max_individual,
+                            idef,i,idav);
                 mig_sol.pop_back();
             }
         }
     } else {
-        for(Jugador D : Vdav){
+        int t = Vdav.size();
+        for(int i = idav + 1; i < t; ++i){
+            Jugador D = Vdav[i];
             if (Preu+D.preu > T) return;
             else if(valid(D,dav_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts)) {
                 dav_sol.push_back(D);
                 generate_exh(Vpor, Vdef, Vmig, Vdav,
                             por_sol, def_sol, mig_sol, dav_sol,
                             N0, N1, N2, N3-1, T,
-                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual);
+                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual,
+                            idef,imig,i);
                 dav_sol.pop_back();
             }
         }
@@ -209,5 +222,5 @@ int main(int argc, char** argv) {
     int max_Punts = -1;
     generate_exh(Vpor, Vdef, Vmig, Vdav,
                  por_sol, def_sol, mig_sol, dav_sol,
-                 1, N1, N2, N3, T, 0, 0, max_Punts, max_individual);
+                 1, N1, N2, N3, T, 0, 0, max_Punts, max_individual, 0,0,0);
 }

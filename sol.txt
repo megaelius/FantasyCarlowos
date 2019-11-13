@@ -1,7 +1,7 @@
-11.0
-POR: Adán
-DEF: San José;Balenziaga;Lekue
-MIG: Córdoba;Vesga;Granero;Maksimovic
-DAV: Sobrino;Enes Ünal;Kike García
-Punts: 890
-Preu: 7472260
+1218.0
+POR: Fake_goa5
+DEF: Siovas;Laguardia;Hermoso
+MIG: Alcaraz;Óscar Rodríguez;Campaña;Orellana
+DAV: Jorge Molina;Mata;Dembélé
+Punts: 1903
+Preu: 72968728
