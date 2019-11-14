@@ -109,7 +109,6 @@ void parameters (int& N1, int& N2, int& N3, int& T, int& J) {
 
 bool valid (const Jugador& j, const vector<Jugador>& v, int max_individual,
             int jug_queden, int Punts_actuals, const int& max_Punts){
-    for(Jugador k : v) if(k == j) return false;
     return Punts_actuals + j.punts + (jug_queden-1)*max_individual > max_Punts;
 }
 
