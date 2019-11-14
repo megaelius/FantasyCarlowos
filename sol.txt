@@ -1,7 +1,7 @@
-1218.0
-POR: Fake_goa5
-DEF: Siovas;Laguardia;Hermoso
-MIG: Alcaraz;Óscar Rodríguez;Campaña;Orellana
-DAV: Jorge Molina;Mata;Dembélé
-Punts: 1903
-Preu: 72968728
+0.0
+POR: Neto
+DEF: Piqué;Siovas;Kiko Olivas
+MIG: Parejo;Campaña;Orellana;Óscar Rodríguez
+DAV: Messi;Jorge Molina;Dembélé
+Punts: 2516
+Preu: 239527809

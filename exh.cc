@@ -208,3 +208,38 @@ int main(int argc, char** argv) {
                  por_sol, def_sol, mig_sol, dav_sol,
                  1, N1, N2, N3, T, 0, 0, max_Punts, max_individual);
 }
+
+bool usat(const vector<Jugador>& v, const Jugador& P){
+    for(Jugador J : v){
+        if(J == P)return true;
+    }
+    return false;
+}
+
+int cota_pos(const vector<Jugador>& v_sol, const vector<Jugador>& V, int N){
+    int cota = 0;
+    int i = 0;
+    int j = 0;
+    while(i < N and j < V.size()){
+        if(not usat(v_sol,V[j])){
+            ++i;
+            cota += V[j].punts;
+        }
+        ++j;
+    }
+    return cota;
+}
+
+bool valid2(const vector<Jugador>& por_sol, const vector<Jugador>& def_sol,
+            const vector<Jugador>& mig_sol,const vector<Jugador>& dav_sol,
+            int max_Punts, int T, int Punts, int N0, int N1, int N2, int N3,
+            int Preu,int k){
+    int cota = 0;
+    cota += cota_pos(por_sol,Vpor,N0);
+    cota += cota_pos(def_sol,Vdef,N1);
+    cota += cota_pos(mig_sol,Vmig,N2);
+    cota += cota_pos(dav_sol,Vdav,N3);
+    cout << cota << endl;
+    if(Punts + cota < max_Punts)return false;
+    return Preu <= T;
+}
