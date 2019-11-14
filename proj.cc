@@ -126,37 +126,35 @@ void generate_exh (int i, int Points, int Price, int Team) {
             overwrite_solution(Points, Price);
         }
     }
-    if (i >= Vplayers.size()) return;
+    if (i >= Vplayers.size() or not valid(Points, i)) return;
     Player j = Vplayers[i];
-    if (valid(Points,i)) {//es el tio con mas puntos que puedes añadir
-        if (Price + j.price <= T) {
-            if (j.position == "por") {
-                if (n0 < 1) {
-                    por_sol[n0] = j; ++n0;
-                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
-                    --n0;
-                }
-            } else if (j.position == "def") {
-                if (n1 < N1) {
-                    def_sol[n1] = j; ++n1;
-                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
-                    --n1;
-                }
-            } else if (j.position == "mig") {
-                if (n2 < N2) {
-                    mig_sol[n2] = j; ++n2;
-                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
-                    --n2;
-                }
-            } else if (j.position == "dav") {
-                if (n3 < N3) {
-                    dav_sol[n3] = j; ++n3;
-                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
-                    --n3;
-                }
+    if (Price + j.price <= T) {
+        if (j.position == "por") {
+            if (n0 < 1) {
+                por_sol[n0] = j; ++n0;
+                generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                --n0;
+            }
+        } else if (j.position == "def") {
+            if (n1 < N1) {
+                def_sol[n1] = j; ++n1;
+                generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                --n1;
+            }
+        } else if (j.position == "mig") {
+            if (n2 < N2) {
+                mig_sol[n2] = j; ++n2;
+                generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                --n2;
+            }
+        } else if (j.position == "dav") {
+            if (n3 < N3) {
+                dav_sol[n3] = j; ++n3;
+                generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                --n3;
             }
         }
-    } else return;
+    }
     generate_exh(i+1, Points, Price, Team);
 }
 
