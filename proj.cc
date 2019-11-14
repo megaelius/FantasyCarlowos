@@ -45,7 +45,7 @@ void write_position(ofstream& out, const vector<Player>& sol) {
 void overwrite_solution (int Points, int Price) {
     ofstream out(outputFile);
     out.setf(ios::fixed);
-    out.precision(1);
+    out.precision(6);
 
     clock_t end = clock();
     double time_taken = double(end - start)/CLOCKS_PER_SEC;

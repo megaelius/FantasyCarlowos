@@ -1,7 +1,7 @@
-0.1
+0.064361
 POR: Neto
-DEF: Piqué;Siovas;Kiko Olivas
-MIG: Parejo;Campaña;Orellana;Óscar Rodríguez
-DAV: Messi;Jorge Molina;Dembélé
-Points: 2516
-Price: 239527809
+DEF: Piqué;Laguardia;Siovas;Kiko Olivas;Calero
+MIG: Parejo;Campaña;Orellana
+DAV: Messi;Jorge Molina
+Points: 2559
+Price: 239048744

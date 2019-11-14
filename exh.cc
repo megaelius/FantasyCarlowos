@@ -6,175 +6,164 @@
 #include <algorithm>
 using namespace std;
 
-struct Jugador{
-    string nom;
-    string posicio;
+struct Player{
+    string name;
+    string position;
     string club;
-    int punts;
-    int preu;
+    int points;
+    int price;
 
-    bool operator==(const Jugador x) {
-        return nom == x.nom and posicio == x.posicio and
-               club == x.club and punts == x.punts and preu == x.preu;
+    bool operator==(const Player x) {
+        return name == x.name and position == x.position and
+               club == x.club and points == x.points and price == x.price;
     }
 
-    bool operator<(const Jugador x) const{
-        return punts < x.punts;
+    bool operator<(const Player x) const{
+        return -points < -x.points;
     }
 };
 
-time_t start = time(0);
+clock_t start = clock();
 string data_base;
 string outputFile;
 string requirementsFile;
+int N1, N2, N3, T, J;
+int n0 = 0, n1 = 0, n2 = 0, n3 = 0;
+int max_Points = -1;
+vector<Player> Vplayers;
+vector<Player> por_sol, def_sol, mig_sol, dav_sol;
 
-void write_position(ofstream& out, const vector<Jugador>& vpos) {
-    int n = vpos.size();
-    for(int i = 0; i < n; ++i){
+
+void write_position(ofstream& out, const vector<Player>& sol) {
+    for(int i = 0; i < sol.size(); ++i){
         if(i != 0) out << ';';
-        out << vpos[i].nom;
+        out << sol[i].name;
     }
     out << endl;
 }
 
-void overwrite_solution (const vector<Jugador>& por,const vector<Jugador>& def,
-                                    const vector<Jugador>& mig,
-                                    const vector<Jugador>& dav,
-                                    int Punts, int Preu) {
+void overwrite_solution (int Points, int Price) {
     ofstream out(outputFile);
     out.setf(ios::fixed);
-    out.precision(1);
+    out.precision(6);
 
-    time_t end = time(0);
-    double time_taken = double(end - start);
+    clock_t end = clock();
+    double time_taken = double(end - start)/CLOCKS_PER_SEC;
 
     out << time_taken << endl;
     out << "POR: ";
-    write_position(out,por);
+    write_position(out,por_sol);
     out << "DEF: ";
-    write_position(out,def);
+    write_position(out,def_sol);
     out << "MIG: ";
-    write_position(out,mig);
+    write_position(out,mig_sol);
     out << "DAV: ";
-    write_position(out,dav);
-    out << "Punts: " << Punts << endl;
-    out << "Preu: " << Preu << endl;
+    write_position(out,dav_sol);
+    out << "Points: " << Points << endl;
+    out << "Price: " << Price << endl;
 
     out.close();
 }
 
 
-//devuelve el valor máximo de los puntos de los jugadores con precio
-//inferior a J euros.
-int database_reader (vector<Jugador>& por, vector<Jugador>& def,
-                        vector<Jugador>& mig, vector<Jugador>& dav, int J) {
-
+void database_reader () {
     ifstream in(data_base);
-    int max_individual = -1;
-    Jugador j;
+    Player j;
     while (not in.eof()) {
-        string nom, posicio, club;
-        int punts, preu;
-        getline(in,nom,';');    if (nom == "") break;
-        getline(in,posicio,';');
-        in >> preu;
+        string name, position, club;
+        int points, price;
+        getline(in,name,';');    if (name == "") break;
+        getline(in,position,';');
+        in >> price;
         char aux; in >> aux;
         getline(in,club,';');
-        in >> punts;
+        in >> points;
         string aux2;
         getline(in,aux2);
-        j.nom = nom;
-        j.posicio = posicio;
+        j.name = name;
+        j.position = position;
         j.club = club;
-        j.punts = punts;
-        j.preu = preu;
-        if (preu <= J) {
-            if (punts > max_individual) max_individual = punts;
-            if (posicio == "por") por.push_back(j);
-            else if (posicio == "def") def.push_back(j);
-            else if (posicio == "mig") mig.push_back(j);
-            else dav.push_back(j);
-        }
+        j.points = points;
+        j.price = price;
+        if (price <= J) Vplayers.push_back(j);
     }
     in.close();
-    return max_individual;
 }
 
-void parameters (int& N1, int& N2, int& N3, int& T, int& J) {
+void parameters () {
     ifstream in(requirementsFile);
     in >> N1 >> N2 >> N3 >> T >> J;
     in.close();
 }
-
-bool valid (const Jugador& j, const vector<Jugador>& v, int max_individual,
-            int jug_queden, int Punts_actuals, const int& max_Punts, int T, int Preu){
-    for(Jugador k : v) if(k == j) return false;
-    return Punts_actuals + j.punts + (jug_queden-1)*max_individual > max_Punts
-           and Preu + j.preu <= T;
+/*
+int cota_pos(const vector<Player>& v_sol,int N, string pos,int i){
+    int cota = 0;
+    int j = 0;
+    while(j < N and i < Vplayers.size()){
+        if(Vplayers[i].position == pos){
+            ++j;
+            cota += Vplayers[i].points;
+        }
+        ++i;
+    }
+    return cota;
 }
 
-void generate_exh(const vector<Jugador>& Vpor,const vector<Jugador>& Vdef,
-                    const vector<Jugador>& Vmig,const vector<Jugador>& Vdav,
-                    vector<Jugador>& por_sol, vector<Jugador>& def_sol,
-                    vector<Jugador>& mig_sol, vector<Jugador>& dav_sol, int N0, int N1, int N2, int N3,
-                    int T, int Punts, int Preu, int& max_Punts, int max_individual) {
+bool valid2(int Points, int i){
+    int cota = 0;
+    cota += cota_pos(por_sol,1-n0,"por",i);
+    cota += cota_pos(def_sol,N1-n1,"def",i);
+    cota += cota_pos(mig_sol,N2-n2,"mig",i);
+    cota += cota_pos(dav_sol,N3-n3,"dav",i);
+    if(Points + cota < max_Points)return false;
+    return true;
+}*/
 
-    if(N0 == 0 and N1 == 0 and N2 == 0 and N3 == 0) {
-        if (Punts > max_Punts) {
-            max_Punts = Punts;
-            overwrite_solution(por_sol,def_sol,mig_sol,dav_sol,Punts,Preu);
-        }
-    } else if (N0 > 0){
-        for(Jugador P : Vpor){
-            if(valid(P,por_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts,T,Preu)) {
-                por_sol.push_back(P);
-                generate_exh(Vpor, Vdef, Vmig, Vdav,
-                            por_sol, def_sol, mig_sol, dav_sol,
-                            N0-1, N1, N2, N3, T,
-                            Punts+P.punts, Preu+P.preu, max_Punts, max_individual);
-                por_sol.pop_back();
-            }
-        }
-    } else if (N1 > 0){
-        for(Jugador D : Vdef){
-            if(valid(D,def_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts,T,Preu)) {
-                def_sol.push_back(D);
-                generate_exh(Vpor, Vdef, Vmig, Vdav,
-                            por_sol, def_sol, mig_sol, dav_sol,
-                            N0, N1-1, N2, N3, T,
-                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual);
-                def_sol.pop_back();
-            }
-        }
-    } else if (N2 > 0){
-        for(Jugador M : Vmig){
-            if(valid(M,mig_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts,T,Preu)) {
-                mig_sol.push_back(M);
-                generate_exh(Vpor, Vdef, Vmig, Vdav,
-                            por_sol, def_sol, mig_sol, dav_sol,
-                            N0, N1, N2-1, N3, T,
-                            Punts+M.punts, Preu+M.preu, max_Punts, max_individual);
-                mig_sol.pop_back();
-            }
-        }
-    } else {
-        for(Jugador D : Vdav){
-            if(valid(D,dav_sol,max_individual,N0+N1+N2+N3,Punts,max_Punts,T,Preu)) {
-                dav_sol.push_back(D);
-                generate_exh(Vpor, Vdef, Vmig, Vdav,
-                            por_sol, def_sol, mig_sol, dav_sol,
-                            N0, N1, N2, N3-1, T,
-                            Punts+D.punts, Preu+D.preu, max_Punts, max_individual);
-                dav_sol.pop_back();
-            }
+void generate_exh (int i, int Points, int Price, int Team) {
+    if (Team == 11) {
+        if (Points > max_Points) {
+            max_Points = Points;
+            overwrite_solution(Points, Price);
         }
     }
+    if (i >= Vplayers.size()) return;
+    Player j = Vplayers[i];
+    if (Points + (11-Team)*j.points >= max_Points) {//es el tio con mas puntos que puedes añadir
+        if (Price + j.price <= T) {
+            if (j.position == "por") {
+                if (n0 < 1) {
+                    por_sol[n0] = j; ++n0;
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                    --n0;
+                }
+            } else if (j.position == "def") {
+                if (n1 < N1) {
+                    def_sol[n1] = j; ++n1;
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                    --n1;
+                }
+            } else if (j.position == "mig") {
+                if (n2 < N2) {
+                    mig_sol[n2] = j; ++n2;
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                    --n2;
+                }
+            } else if (j.position == "dav") {
+                if (n3 < N3) {
+                    dav_sol[n3] = j; ++n3;
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
+                    --n3;
+                }
+            }
+        }
+    } else return;
+    generate_exh(i+1, Points, Price, Team);
 }
 
 int main(int argc, char** argv) {
     if (argc != 4) {
         cout << "Syntax: " << argv[0] << " data_base.txt"
-        << "requirements_file.txt" << " output_file.txt" << endl;
+        << " requirements_file.txt" << "output_file.txt" << endl;
         exit(1);
     }
 
@@ -182,64 +171,15 @@ int main(int argc, char** argv) {
     outputFile = argv[3];
     requirementsFile = argv[2];
 
-    int N1,N2,N3,T,J;
+    parameters();
 
-    parameters(N1,N2,N3,T,J);
+    database_reader();
 
-    vector<Jugador> Vpor(0);
-    vector<Jugador> Vdef(0);
-    vector<Jugador> Vmig(0);
-    vector<Jugador> Vdav(0);
+    sort(Vplayers.begin(), Vplayers.end());
 
-    int max_individual = database_reader(Vpor,Vdef,Vmig,Vdav, J);
-
-    sort(Vpor.begin(),Vpor.end());
-    sort(Vdef.begin(),Vdef.end());
-    sort(Vmig.begin(),Vmig.end());
-    sort(Vdav.begin(),Vdav.end());
-
-    vector<Jugador> por_sol;
-    vector<Jugador> def_sol;
-    vector<Jugador> mig_sol;
-    vector<Jugador> dav_sol;
-
-    int max_Punts = -1;
-    generate_exh(Vpor, Vdef, Vmig, Vdav,
-                 por_sol, def_sol, mig_sol, dav_sol,
-                 1, N1, N2, N3, T, 0, 0, max_Punts, max_individual);
-}
-
-bool usat(const vector<Jugador>& v, const Jugador& P){
-    for(Jugador J : v){
-        if(J == P)return true;
-    }
-    return false;
-}
-
-int cota_pos(const vector<Jugador>& v_sol, const vector<Jugador>& V, int N){
-    int cota = 0;
-    int i = 0;
-    int j = 0;
-    while(i < N and j < V.size()){
-        if(not usat(v_sol,V[j])){
-            ++i;
-            cota += V[j].punts;
-        }
-        ++j;
-    }
-    return cota;
-}
-
-bool valid2(const vector<Jugador>& por_sol, const vector<Jugador>& def_sol,
-            const vector<Jugador>& mig_sol,const vector<Jugador>& dav_sol,
-            int max_Punts, int T, int Punts, int N0, int N1, int N2, int N3,
-            int Preu,int k){
-    int cota = 0;
-    cota += cota_pos(por_sol,Vpor,N0);
-    cota += cota_pos(def_sol,Vdef,N1);
-    cota += cota_pos(mig_sol,Vmig,N2);
-    cota += cota_pos(dav_sol,Vdav,N3);
-    cout << cota << endl;
-    if(Punts + cota < max_Punts)return false;
-    return Preu <= T;
+    por_sol = vector<Player> (1);
+    def_sol = vector<Player> (N1);
+    mig_sol = vector<Player> (N2);
+    dav_sol = vector<Player> (N3);
+    generate_exh(0, 0, 0, 0);
 }
