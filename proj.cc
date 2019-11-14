@@ -109,7 +109,6 @@ void generate_exh (int i, int Punts, int Preu, int Team) {
         if (Preu + j.preu <= T) {
             if (j.posicio == "por") {
                 if (n0 < 1) {
-                    cout << j.nom << endl;
                     por_sol[n0] = j; ++n0;
                     generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
                     --n0;
