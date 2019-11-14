@@ -6,20 +6,20 @@
 #include <algorithm>
 using namespace std;
 
-struct Jugador{
-    string nom;
-    string posicio;
+struct Player{
+    string name;
+    string position;
     string club;
-    int punts;
-    int preu;
+    int points;
+    int price;
 
-    bool operator==(const Jugador x) {
-        return nom == x.nom and posicio == x.posicio and
-               club == x.club and punts == x.punts and preu == x.preu;
+    bool operator==(const Player x) {
+        return name == x.name and position == x.position and
+               club == x.club and points == x.points and price == x.price;
     }
 
-    bool operator<(const Jugador x) const{
-        return -punts < -x.punts;
+    bool operator<(const Player x) const{
+        return -points < -x.points;
     }
 };
 
@@ -29,20 +29,20 @@ string outputFile;
 string requirementsFile;
 int N1, N2, N3, T, J;
 int n0 = 0, n1 = 0, n2 = 0, n3 = 0;
-int max_Punts = -1;
-vector<Jugador> Vplayers;
-vector<Jugador> por_sol, def_sol, mig_sol, dav_sol;
+int max_Points = -1;
+vector<Player> Vplayers;
+vector<Player> por_sol, def_sol, mig_sol, dav_sol;
 
 
-void write_position(ofstream& out, const vector<Jugador>& sol) {
+void write_position(ofstream& out, const vector<Player>& sol) {
     for(int i = 0; i < sol.size(); ++i){
         if(i != 0) out << ';';
-        out << sol[i].nom;
+        out << sol[i].name;
     }
     out << endl;
 }
 
-void overwrite_solution (int Punts, int Preu) {
+void overwrite_solution (int Points, int Price) {
     ofstream out(outputFile);
     out.setf(ios::fixed);
     out.precision(1);
@@ -59,8 +59,8 @@ void overwrite_solution (int Punts, int Preu) {
     write_position(out,mig_sol);
     out << "DAV: ";
     write_position(out,dav_sol);
-    out << "Punts: " << Punts << endl;
-    out << "Preu: " << Preu << endl;
+    out << "Points: " << Points << endl;
+    out << "Price: " << Price << endl;
 
     out.close();
 }
@@ -68,24 +68,24 @@ void overwrite_solution (int Punts, int Preu) {
 
 void database_reader () {
     ifstream in(data_base);
-    Jugador j;
+    Player j;
     while (not in.eof()) {
-        string nom, posicio, club;
-        int punts, preu;
-        getline(in,nom,';');    if (nom == "") break;
-        getline(in,posicio,';');
-        in >> preu;
+        string name, position, club;
+        int points, price;
+        getline(in,name,';');    if (name == "") break;
+        getline(in,position,';');
+        in >> price;
         char aux; in >> aux;
         getline(in,club,';');
-        in >> punts;
+        in >> points;
         string aux2;
         getline(in,aux2);
-        j.nom = nom;
-        j.posicio = posicio;
+        j.name = name;
+        j.position = position;
         j.club = club;
-        j.punts = punts;
-        j.preu = preu;
-        if (preu <= J) Vplayers.push_back(j);
+        j.points = points;
+        j.price = price;
+        if (price <= J) Vplayers.push_back(j);
     }
     in.close();
 }
@@ -96,45 +96,45 @@ void parameters () {
     in.close();
 }
 
-void generate_exh (int i, int Punts, int Preu, int Team) {
+void generate_exh (int i, int Points, int Price, int Team) {
     if (Team == 11) {
-        if (Punts > max_Punts) {
-            max_Punts = Punts;
-            overwrite_solution(Punts, Preu);
+        if (Points > max_Points) {
+            max_Points = Points;
+            overwrite_solution(Points, Price);
         }
     }
     if (i >= Vplayers.size()) return;
-    Jugador j = Vplayers[i];
-    if (Punts + j.punts*(11-Team) > max_Punts) {//es el tio con mas puntos que puedes añadir
-        if (Preu + j.preu <= T) {
-            if (j.posicio == "por") {
+    Player j = Vplayers[i];
+    if (Points + j.points*(11-Team) > max_Points) {//es el tio con mas puntos que puedes añadir
+        if (Price + j.price <= T) {
+            if (j.position == "por") {
                 if (n0 < 1) {
                     por_sol[n0] = j; ++n0;
-                    generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
                     --n0;
                 }
-            } else if (j.posicio == "def") {
+            } else if (j.position == "def") {
                 if (n1 < N1) {
                     def_sol[n1] = j; ++n1;
-                    generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
                     --n1;
                 }
-            } else if (j.posicio == "mig") {
+            } else if (j.position == "mig") {
                 if (n2 < N2) {
                     mig_sol[n2] = j; ++n2;
-                    generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
                     --n2;
                 }
-            } else if (j.posicio == "dav") {
+            } else if (j.position == "dav") {
                 if (n3 < N3) {
                     dav_sol[n3] = j; ++n3;
-                    generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
+                    generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
                     --n3;
                 }
             }
         }
     } else return;
-    generate_exh(i+1, Punts, Preu, Team);
+    generate_exh(i+1, Points, Price, Team);
 }
 
 int main(int argc, char** argv) {
@@ -154,9 +154,9 @@ int main(int argc, char** argv) {
 
     sort(Vplayers.begin(), Vplayers.end());
 
-    por_sol = vector<Jugador> (1);
-    def_sol = vector<Jugador> (N1);
-    mig_sol = vector<Jugador> (N2);
-    dav_sol = vector<Jugador> (N3);
+    por_sol = vector<Player> (1);
+    def_sol = vector<Player> (N1);
+    mig_sol = vector<Player> (N2);
+    dav_sol = vector<Player> (N3);
     generate_exh(0, 0, 0, 0);
 }
