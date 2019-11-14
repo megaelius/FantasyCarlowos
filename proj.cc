@@ -18,13 +18,8 @@ struct Player{
                club == x.club and points == x.points and price == x.price;
     }
 
-<<<<<<< HEAD
-    bool operator<(const Jugador x) const{
-        return punts > x.punts;
-=======
     bool operator<(const Player x) const{
         return -points < -x.points;
->>>>>>> 8924d1a132001f10534fd43a4b894fd217b75bd8
     }
 };
 
@@ -101,7 +96,6 @@ void parameters () {
     in.close();
 }
 
-<<<<<<< HEAD
 bool usat(const vector<Jugador>& v, const Jugador& P){
     for(Jugador J : v){
         if(J == P)return true;
@@ -133,9 +127,6 @@ bool valid2(int Punts, int i){
 }
 
 void generate_exh (int i, int Punts, int Preu, int Team) {
-=======
-void generate_exh (int i, int Points, int Price, int Team) {
->>>>>>> 8924d1a132001f10534fd43a4b894fd217b75bd8
     if (Team == 11) {
         if (Points > max_Points) {
             max_Points = Points;
@@ -143,17 +134,10 @@ void generate_exh (int i, int Points, int Price, int Team) {
         }
     }
     if (i >= Vplayers.size()) return;
-<<<<<<< HEAD
-    Jugador j = Vplayers[i];
-    if (valid2(Punts,i)) {//es el tio con mas puntos que puedes añadir
-        if (Preu + j.preu <= T) {
-            if (j.posicio == "por") {
-=======
     Player j = Vplayers[i];
-    if (Points + j.points*(11-Team) > max_Points) {//es el tio con mas puntos que puedes añadir
+    if (valid2(Punts,i)) {//es el tio con mas puntos que puedes añadir
         if (Price + j.price <= T) {
             if (j.position == "por") {
->>>>>>> 8924d1a132001f10534fd43a4b894fd217b75bd8
                 if (n0 < 1) {
                     por_sol[n0] = j; ++n0;
                     generate_exh(i+1, Points+j.points, Price+j.price, Team+1);
@@ -200,17 +184,9 @@ int main(int argc, char** argv) {
 
     sort(Vplayers.begin(), Vplayers.end());
 
-<<<<<<< HEAD
-    por_sol = vector<Jugador> (1);
-    def_sol = vector<Jugador> (N1);
-    mig_sol = vector<Jugador> (N2);
-    dav_sol = vector<Jugador> (N3);
-
-=======
     por_sol = vector<Player> (1);
     def_sol = vector<Player> (N1);
     mig_sol = vector<Player> (N2);
     dav_sol = vector<Player> (N3);
->>>>>>> 8924d1a132001f10534fd43a4b894fd217b75bd8
     generate_exh(0, 0, 0, 0);
 }
