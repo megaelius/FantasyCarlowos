@@ -19,7 +19,7 @@ struct Jugador{
     }
 
     bool operator<(const Jugador x) const{
-        return -punts < -x.punts;
+        return punts > x.punts;
     }
 };
 
@@ -96,6 +96,36 @@ void parameters () {
     in.close();
 }
 
+bool usat(const vector<Jugador>& v, const Jugador& P){
+    for(Jugador J : v){
+        if(J == P)return true;
+    }
+    return false;
+}
+
+int cota_pos(const vector<Jugador>& v_sol,int N, string pos,int i){
+    int cota = 0;
+    int j = 0;
+    while(i < N and j < Vplayers.size()){
+        if(Vplayers[j].posicio == pos and not usat(v_sol,Vplayers[j])){
+            ++i;
+            cota += Vplayers[j].punts;
+        }
+        ++j;
+    }
+    return cota;
+}
+
+bool valid2(int Punts, int i){
+    int cota = 0;
+    cota += cota_pos(por_sol,1-n0,"por",i);
+    cota += cota_pos(def_sol,N1-n1,"def",i);
+    cota += cota_pos(mig_sol,N2-n2,"mig",i);
+    cota += cota_pos(dav_sol,N3-n3,"dav",i);
+    if(Punts + cota < max_Punts)return false;
+    return true;
+}
+
 void generate_exh (int i, int Punts, int Preu, int Team) {
     if (Team == 11) {
         if (Punts > max_Punts) {
@@ -105,11 +135,10 @@ void generate_exh (int i, int Punts, int Preu, int Team) {
     }
     if (i >= Vplayers.size()) return;
     Jugador j = Vplayers[i];
-    if (Punts + j.punts*(11-Team) > max_Punts) {//es el tio con mas puntos que puedes añadir
+    if (valid2(Punts,i)) {//es el tio con mas puntos que puedes añadir
         if (Preu + j.preu <= T) {
             if (j.posicio == "por") {
                 if (n0 < 1) {
-                    cout << j.nom << endl;
                     por_sol[n0] = j; ++n0;
                     generate_exh(i+1, Punts+j.punts, Preu+j.preu, Team+1);
                     --n0;
@@ -159,5 +188,6 @@ int main(int argc, char** argv) {
     def_sol = vector<Jugador> (N1);
     mig_sol = vector<Jugador> (N2);
     dav_sol = vector<Jugador> (N3);
+
     generate_exh(0, 0, 0, 0);
 }
