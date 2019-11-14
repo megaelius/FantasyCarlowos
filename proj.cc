@@ -109,7 +109,7 @@ int cota_pos(const vector<Player>& v_sol,int N, string pos,int i){
     return cota;
 }
 
-bool valid2(int Points, int i){
+bool valid(int Points, int i){
     int cota = 0;
     cota += cota_pos(por_sol,1-n0,"por",i);
     cota += cota_pos(def_sol,N1-n1,"def",i);
@@ -128,7 +128,7 @@ void generate_exh (int i, int Points, int Price, int Team) {
     }
     if (i >= Vplayers.size()) return;
     Player j = Vplayers[i];
-    if (valid2(Points,i)) {//es el tio con mas puntos que puedes añadir
+    if (valid(Points,i)) {//es el tio con mas puntos que puedes añadir
         if (Price + j.price <= T) {
             if (j.position == "por") {
                 if (n0 < 1) {
