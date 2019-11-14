@@ -1,4 +1,4 @@
-0.061303
+0.0
 POR: Neto
 DEF: Piqué;Siovas;Kiko Olivas
 MIG: Parejo;Campaña;Orellana;Óscar Rodríguez
