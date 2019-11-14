@@ -1,7 +1,7 @@
-0.0
-POR: Oier
-DEF: Raúl García;Rubén Peña;Antunes
-MIG: Maksimovic;Granero;Toni;Manu García
-DAV: Enes Ünal;Fake_str5;Fake_str4
-Punts: 1228
-Preu: 7462851
+0.1
+POR: Neto
+DEF: Piqué;Siovas;Kiko Olivas
+MIG: Parejo;Campaña;Orellana;Óscar Rodríguez
+DAV: Messi;Jorge Molina;Dembélé
+Points: 2516
+Price: 239527809
