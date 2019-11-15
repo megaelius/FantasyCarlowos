@@ -78,8 +78,8 @@ void overwrite_solution (int Points, int Price) {
     write_position(out,mig_sol);
     out << "DAV: ";
     write_position(out,dav_sol);
-    out << "Points: " << Points << endl;
-    out << "Price: " << Price << endl;
+    out << "Punts: " << Points << endl;
+    out << "Preu: " << Price << endl;
 
     out.close();
 }
