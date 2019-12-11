@@ -120,9 +120,14 @@ void parameters () {
     in.close();
 }
 
+/*
+We sort the database in decreasing order of productivity = points/log(price)
+and we choose the first team that we can afford. This is done by taking
+the players with higher productivity in the first place.
+*/
 void greedy(){
-    sort(Vplayers.begin(), Vplayers.end()); //Sorts by points in decreasing order
-    //We assign the vectors the size given in the requirements
+    sort(Vplayers.begin(), Vplayers.end());
+    //We initialize the solution to 4 empty vectors.
     por_sol = vector<Player> (0);
     def_sol = vector<Player> (0);
     mig_sol = vector<Player> (0);
@@ -135,27 +140,24 @@ void greedy(){
     int puntos = 0;
     for(int i = 0; i < Vplayers.size() and not(n0+n1+n2+n3 == 11); ++i){
         if(precio + Vplayers[i].price <= T){
-            if(Vplayers[i].position == "por" and n0 == 0){
+            bool entra = false;
+            if((entra = Vplayers[i].position == "por" and n0 == 0)){
                 n0++;
                 por_sol.push_back(Vplayers[i]);
-                puntos += Vplayers[i].points;
-                precio += Vplayers[i].price;
             }
-            else if(Vplayers[i].position == "def" and n1 < N1){
+            else if((entra = Vplayers[i].position == "def" and n1 < N1)){
                 n1++;
                 def_sol.push_back(Vplayers[i]);
-                puntos += Vplayers[i].points;
-                precio += Vplayers[i].price;
             }
-            else if(Vplayers[i].position == "mig" and n2 < N2){
+            else if((entra = Vplayers[i].position == "mig" and n2 < N2)){
                 n2++;
                 mig_sol.push_back(Vplayers[i]);
-                puntos += Vplayers[i].points;
-                precio += Vplayers[i].price;
             }
-            else if(Vplayers[i].position == "dav" and n3 < N3){
+            else if((entra = Vplayers[i].position == "dav" and n3 < N3)){
                 n3++;
                 dav_sol.push_back(Vplayers[i]);
+            }
+            if(entra){
                 puntos += Vplayers[i].points;
                 precio += Vplayers[i].price;
             }
