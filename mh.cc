@@ -170,10 +170,13 @@ void greedy(){
     max_Points = Points;
 }
 
-double probability() { return exp((puntsS'-puntsS)/T); }
+//prob
+double probability(double T, int Points_s, int Points_sN) {
+    return exp((Points_sN-Points_s)/T);
+}
 
 // Returns a random number in the interval [l, u].
-double random(int l, int u) { return l + (double)rand() % (u-l+1); }
+int random(int l, int u) { return l + rand() % (u-l+1); }
 
 /*
 After greedy, variables with val:
@@ -182,34 +185,42 @@ price
 points
 n0, n1, n2, n3
 are full
+
+RESETS: Sometimes it is better to move back to a solution that was significantly better rather than always moving from the current state.
+To do this we set s and e to sbest and ebest and perhaps restart the annealing schedule. Popular criteria: restarting based on a fixed
+number of steps, based on whether the current energy is too high compared to the best energy obtained so far, restarting randomly...
 */
-void mh(){
-    /*
-    RESETS: Sometimes it is better to move back to a solution that was significantly better rather than always moving from the current state.
-    To do this we set s and e to sbest and ebest and perhaps restart the annealing schedule. Popular criteria: restarting based on a fixed
-    number of steps, based on whether the current energy is too high compared to the best energy obtained so far, restarting randomly...
-    */
-    greedy(); //Generates an initial solution
-    int Points_s = max_Points;
+
+bool improve(double& T){
+    int Points_s = max_Points;//~
     int Points_sN;
-    double T = 1e9;
-    //vector<bool> S(J, false);//mirar cuantos llevo usados?
-    for (int i = 0; i < Vplayers.size(); ++i) { //and not found?
-        find_Neighbor();//genera otra solucion cambiando un jugador busca un random del vector tocho y si no esta en el team lo metes
+    find_Neighbor();//escoge un jugador que cambiar
+    bool found = false;
+    for (int j = 0; j < Vplayers.size() and not found; j++) {//miramos todos los q salen si cambiamos i
+        //calcular puntos del nuevo team
         if (Points_s < Points_sN) {
-            Points_s = Points_sN;
-            por_sol = por_N; def_sol = def_N; mig_sol = mig_N; dav_sol = dav_N;
-            if (max_Points < Points_s) {
-                int Price = find_Price();
-                max_Points = Points_s;
-                overwrite_solution(max_Points, Price);
-            }
-        } else if (probability(T) > random(0, 1)) {
-            por_sol = por_N; def_sol = def_N; mig_sol = mig_N; dav_sol = dav_N;
-            Points_s = Points_sN;
+            found = true;
+            //cambiar el jugador y los puntos
+        } else if (probability(T, Points_s, Points_sN) > double_random_entre(0, 1)) {//podemos hacer trampillas con ints y multiplicar por 100 o algo
+            found = true;
+            //cambiar el jugador y los puntos
         }
-        T *= 0.9;//probar valores e ir calibrando
     }
+    if (found) {
+        if (max_Points < Points_s) {
+            int Price = find_Price();
+            max_Points = Points_s;
+            overwrite_solution(max_Points, Price);
+        }
+    }
+    T *= 0.9;//probar valores e ir calibrando
+    return found;
+}
+
+void mh_delpaioeste(){
+    greedy();
+    double T = 1e9;
+    while(improve(T));//se pararía si el jugador seleccionado en el rnd es el mejor para ese caso en concreto
 }
 
 int main(int argc, char** argv) {
