@@ -217,9 +217,11 @@ bool improve(double& T){
     return found;
 }
 
-void mh_delpaioeste(){
-    greedy();
+void GRASP(){
+    //fase1
+    greedy();// ¿lo hacemos generalizado o un solo jugador por posición?
     double T = 1e9;
+    //fase2
     while(improve(T));//se pararía si el jugador seleccionado en el rnd es el mejor para ese caso en concreto
 }
 
@@ -245,5 +247,5 @@ int main(int argc, char** argv) {
 
     database_reader(); //Reads players from database and saves them in Vplayers
 
-    mh();
+    GRASP();
 }
