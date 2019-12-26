@@ -184,42 +184,29 @@ void greedy(){
 // Returns a random number in the interval [l, u].
 int random(int l, int u) {return l + rand() % (u-l+1); }
 
-void change_random(vector<Player>& pos_sol2, int pos){
-    int i; //position of the player we are going to put into our solution.
-    int j; //position of the player we want to change.
-    if(pos == 1){
-        i = random(0,Vpor.size()-1);
-        j = 0;
-        pos_sol2[j] = Vpor[i];
-    } else if(pos == 2){
-        i = random(0,Vdef.size()-1);
-        j = random(0,N1-1);
-        pos_sol2[j] = Vdef[i];
-    } else if(pos == 3){
-        i = random(0,Vmig.size()-1);
-        j = random(0,N2-1);
-        pos_sol2[j] = Vmig[i];
-    } else {
-        i = random(0,Vdav.size()-1);
-        j = random(0,N3-1);
-        pos_sol2[j] = Vdav[i];
-    }
-}
-
 void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
                    vector<Player>& mig_sol2, vector<Player>& dav_sol2){
     int i = random(0, 10);
+    int j,k;
     if(i == 0){
-        change_random(por_sol,1);
+        j = random(0,Vpor.size()-1);
+        k = 0;
+        por_sol2[k] = Vpor[j];
     }
     else if(i >= 1 and i<=N1){
-        change_random(def_sol,2);
+        j = random(0,Vdef.size()-1);
+        k = random(0,def_sol2.size()-1);
+        def_sol2[k] = Vdef[j];
     }
     else if(i >= 1+N1 and i<=N1+N2){
-        change_random(mig_sol,3);
+        j = random(0,Vmig.size()-1);
+        k = random(0,mig_sol2.size()-1);
+        mig_sol2[k] = Vmig[j];
     }
     else{
-        change_random(dav_sol,4);
+        j = random(0,Vdav.size()-1);
+        k = random(0,dav_sol2.size()-1);
+        dav_sol2[k] = Vdav[j];
     }
 }
 
@@ -278,17 +265,13 @@ void improve(double& Temp){
     }
     //cout << probability(T, Points, Points2) << endl;
     if (found) {
-        if (por_sol != por_sol2 or def_sol != def_sol2 or mig_sol != mig_sol2 or dav_sol != dav_sol2) {
-            cout << por_sol2[0].name << endl;
-            for(Player x : def_sol2)cout << x.name << endl;
-            for(Player x : mig_sol2)cout << x.name << endl;
-            for(Player x : dav_sol2)cout << x.name << endl;
-        }
         por_sol=por_sol2; def_sol=def_sol2; mig_sol=mig_sol2; dav_sol=dav_sol2;
-        overwrite_solution(Points2, Price2);
-
+        if(max_Points < Points2) {
+            overwrite_solution(Points2, Price2);
+            max_Points = Points2;
+        }
     }
-    Temp *= 0.9;//probar valores e ir calibrando
+    Temp *= 0.99;//probar valores e ir calibrando
 }
 
 void GRASP(){//DUPLICADOS
@@ -296,7 +279,7 @@ void GRASP(){//DUPLICADOS
     greedy();
     double Temp = 10e9;
     //fase2
-    long long int k = 100;
+    long long int k = 10e6;
     while (k > 0) {
         improve(Temp);
         --k;
