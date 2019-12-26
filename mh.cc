@@ -191,37 +191,39 @@ bool is_in(const vector<Player>& por_sol2, const Player& x){
 
 void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
                    vector<Player>& mig_sol2, vector<Player>& dav_sol2){
-    int i = random(0, 10);
-    int j,k;
-    int Q = 1;
-    if(i == 0){
-        j = random(0,Vpor.size()/Q);
-        k = 0;
-        por_sol2[k] = Vpor[j];
-    }
-    else if(i >= 1 and i<=N1){
-        j = random(0,Vdef.size()/Q);
-        while(is_in(def_sol2,Vdef[j])){
+    for(int p = 0; p < 3; ++p){
+        int i = random(0, 10);
+        int j,k;
+        int Q = 1;
+        if(i == 0){
+            j = random(0,Vpor.size()/Q);
+            k = 0;
+            por_sol2[k] = Vpor[j];
+        }
+        else if(i >= 1 and i<=N1){
             j = random(0,Vdef.size()/Q);
+            while(is_in(def_sol2,Vdef[j])){
+                j = random(0,Vdef.size()/Q);
+            }
+            k = random(0,def_sol2.size()-1);
+            def_sol2[k] = Vdef[j];
         }
-        k = random(0,def_sol2.size()-1);
-        def_sol2[k] = Vdef[j];
-    }
-    else if(i >= 1+N1 and i<=N1+N2){
-        j = random(0,Vmig.size()/Q);
-        while(is_in(mig_sol2,Vmig[j])){
+        else if(i >= 1+N1 and i<=N1+N2){
             j = random(0,Vmig.size()/Q);
+            while(is_in(mig_sol2,Vmig[j])){
+                j = random(0,Vmig.size()/Q);
+            }
+            k = random(0,mig_sol2.size()-1);
+            mig_sol2[k] = Vmig[j];
         }
-        k = random(0,mig_sol2.size()-1);
-        mig_sol2[k] = Vmig[j];
-    }
-    else{
-        j = random(0,Vdav.size()/Q);
-        while(is_in(dav_sol2,Vdav[j])){
+        else{
             j = random(0,Vdav.size()/Q);
+            while(is_in(dav_sol2,Vdav[j])){
+                j = random(0,Vdav.size()/Q);
+            }
+            k = random(0,dav_sol2.size()-1);
+            dav_sol2[k] = Vdav[j];
         }
-        k = random(0,dav_sol2.size()-1);
-        dav_sol2[k] = Vdav[j];
     }
 }
 
@@ -249,8 +251,8 @@ void count(int& Points, int& Price, const vector<Player>& por_sol,
 }
 
 //prob
-double probability(double T, int Points, int Points2) {
-    return exp((Points2-Points)/T);
+double probability(double T, int Points, int Points2, int Price, int Price2) {
+    return exp(-(Points2-Points)/T);
 }
 
 /*
@@ -275,9 +277,12 @@ void improve(double& Temp){
     bool found = false;
     if (Points < Points2) {
         found = true;
-    } else if (probability(T, Points, Points2) > rand()/(RAND_MAX+1.)) {
+
+    }
+    else if (probability(T, Points, Points2,Price,Price2) > rand()/(RAND_MAX+1.)){
         found = true;
     }
+    cout << probability(T, Points, Points2,Price,Price2) << endl;
     //cout << probability(T, Points, Points2) << endl;
     if (found) {
         por_sol=por_sol2; def_sol=def_sol2; mig_sol=mig_sol2; dav_sol=dav_sol2;
@@ -286,7 +291,7 @@ void improve(double& Temp){
             max_Points = Points2;
         }
     }
-    Temp *= 0.99;//probar valores e ir calibrando
+    Temp *= 0.8;//probar valores e ir calibrando
 }
 
 void GRASP(){//DUPLICADOS
@@ -294,11 +299,10 @@ void GRASP(){//DUPLICADOS
     greedy();
     double Temp = 10e9;
     //fase2
-    long long int k = 10e6;
+    long long int k = 10e9;
     while (k > 0) {
         improve(Temp);
         --k;
-        cout << Temp << endl;
     }
 }
 

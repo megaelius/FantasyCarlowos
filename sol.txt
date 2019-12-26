@@ -1,7 +1,7 @@
-18.2
-POR: Oier
-DEF: Aritz;Bustinza;Fake_def2
-MIG: Escalante;Maksimovic;Anuar;Vesga
-DAV: Gaizka Larrazabal;Sobrino;Ferrán Torres
-Punts: 995
-Preu: 7207161
+2.4
+POR: Yoel
+DEF: Aritz;Raúl García;Francis
+MIG: Toni;Sergio Álvarez;Pablo de Blasis;Maksimovic
+DAV: Sobrino;Enes Ünal;
+Punts: 1004
+Preu: 7238821
