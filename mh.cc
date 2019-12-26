@@ -22,8 +22,8 @@ struct Player{
       atributes are equal.
     */
     bool operator==(const Player x) const {
-        return name == x.name and position == x.position and
-               club == x.club and points == x.points and price == x.price;
+        return name == x.name /*and position == x.position and
+               club == x.club and points == x.points and price == x.price*/;
     }
     /*Lesser operator. We use it to order the vector of players in decreasing
       value of points/log(price).
@@ -32,7 +32,7 @@ struct Player{
     */
     bool operator<(const Player x) const{
         if(price != 0 and x.price != 0){
-            return double(points)/log(price) > double(x.points)/log(x.price);
+            return double(points)/log(price) < double(x.points)/log(x.price);
         }
         else if(price == 0)return false;
         else return true;
@@ -184,27 +184,42 @@ void greedy(){
 // Returns a random number in the interval [l, u].
 int random(int l, int u) {return l + rand() % (u-l+1); }
 
+bool is_in(const vector<Player>& por_sol2, const Player& x){
+    for(Player y : por_sol)if(y == x)return true;
+    return false;
+}
+
 void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
                    vector<Player>& mig_sol2, vector<Player>& dav_sol2){
     int i = random(0, 10);
     int j,k;
+    int Q = 1;
     if(i == 0){
-        j = random(0,Vpor.size()-1);
+        j = random(0,Vpor.size()/Q);
         k = 0;
         por_sol2[k] = Vpor[j];
     }
     else if(i >= 1 and i<=N1){
-        j = random(0,Vdef.size()-1);
+        j = random(0,Vdef.size()/Q);
+        while(is_in(def_sol2,Vdef[j])){
+            j = random(0,Vdef.size()/Q);
+        }
         k = random(0,def_sol2.size()-1);
         def_sol2[k] = Vdef[j];
     }
     else if(i >= 1+N1 and i<=N1+N2){
-        j = random(0,Vmig.size()-1);
+        j = random(0,Vmig.size()/Q);
+        while(is_in(mig_sol2,Vmig[j])){
+            j = random(0,Vmig.size()/Q);
+        }
         k = random(0,mig_sol2.size()-1);
         mig_sol2[k] = Vmig[j];
     }
     else{
-        j = random(0,Vdav.size()-1);
+        j = random(0,Vdav.size()/Q);
+        while(is_in(dav_sol2,Vdav[j])){
+            j = random(0,Vdav.size()/Q);
+        }
         k = random(0,dav_sol2.size()-1);
         dav_sol2[k] = Vdav[j];
     }
@@ -283,6 +298,7 @@ void GRASP(){//DUPLICADOS
     while (k > 0) {
         improve(Temp);
         --k;
+        cout << Temp << endl;
     }
 }
 

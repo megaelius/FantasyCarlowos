@@ -1,7 +1,7 @@
-0.0
+18.2
 POR: Oier
-DEF: Raúl García;Antunes;Rubén Peña
-MIG: Maksimovic;Toni;Granero;Escalante
-DAV: Enes Ünal;Puado;Fake_str1
-Punts: 1259
-Preu: 7484731
+DEF: Aritz;Bustinza;Fake_def2
+MIG: Escalante;Maksimovic;Anuar;Vesga
+DAV: Gaizka Larrazabal;Sobrino;Ferrán Torres
+Punts: 995
+Preu: 7207161
