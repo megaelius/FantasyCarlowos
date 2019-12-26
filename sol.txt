@@ -1,7 +1,7 @@
-0.7
-POR: idBis-159
-DEF: idBis-557;idBis-521;idBis-1151;idBis-892
-MIG: idBis-2075;idBis-2700;idBis-1864;idBis-2561;idBis-2336
-DAV: idBis-3481
-Punts: 1179700
-Preu: 1586668
+0.0
+POR: Oier
+DEF: Raúl García;Antunes;Rubén Peña
+MIG: Maksimovic;Toni;Granero;Escalante
+DAV: Enes Ünal;Puado;Fake_str1
+Punts: 1259
+Preu: 7484731

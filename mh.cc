@@ -21,7 +21,7 @@ struct Player{
     /*Comparison operator between two players. Only returns true if all of their
       atributes are equal.
     */
-    bool operator==(const Player x) {
+    bool operator==(const Player x) const {
         return name == x.name and position == x.position and
                club == x.club and points == x.points and price == x.price;
     }
@@ -49,9 +49,12 @@ int N1, N2, N3, T, J;
 //Points of the best solution found yet
 int max_Points;
 //The database is stored in this vector:
-vector<Player> Vplayers;
+vector<Player> Vpor;
+vector<Player> Vdef;
+vector<Player> Vmig;
+vector<Player> Vdav;
 //These vectors store the line up during the execution of the algorithm:
-vector<Player> por_sol, def_sol, mig_sol, dav_sol, por_N, def_N, mig_N, dav_N;
+vector<Player> por_sol, def_sol, mig_sol, dav_sol;
 //COMENTAR
 int Points, Price, Points_N, Price_N;
 
@@ -112,7 +115,21 @@ void database_reader () {
         j.club = club;
         j.points = points;
         j.price = price;
-        if (price <= J) Vplayers.push_back(j);
+        if (price <= J){
+            if(position == "por"){
+                Vpor.push_back(j);
+            }
+            else if(position == "def"){
+                Vdef.push_back(j);
+            }
+            else if(position == "mig"){
+                Vmig.push_back(j);
+            }
+
+            else if(position == "dav"){
+                Vdav.push_back(j);
+            }
+        }
     }
     in.close();
 }
@@ -124,13 +141,29 @@ void parameters () {
     in.close();
 }
 
+//For each position in the team, finds the players in the greedy solution
+void fill_position(const vector<Player>& Vpos, vector<Player>& pos_sol,
+                   int& Price, int& Points, int Ni){
+    int ni = 0;
+    for(int i = 0; i < Vpos.size(); i++) {
+        if(Price + Vpos[i].price <= T and ni++ < Ni) {
+            pos_sol.push_back(Vpos[i]);
+            Points += Vpos[i].points;
+            Price += Vpos[i].price;
+        }
+    }
+}
+
 /*
 We sort the database in decreasing order of productivity = points/log(price)
 and we choose the first team that we can afford. This is done by taking
 the players with higher productivity in the first place.
 */
 void greedy(){
-    sort(Vplayers.begin(), Vplayers.end());
+    sort(Vpor.begin(), Vpor.end());
+    sort(Vdef.begin(), Vdef.end());
+    sort(Vmig.begin(), Vmig.end());
+    sort(Vdav.begin(), Vdav.end());
     //We initialize the solution to 4 empty vectors.
     por_sol = vector<Player> (0);
     def_sol = vector<Player> (0);
@@ -139,44 +172,84 @@ void greedy(){
     /*Each variable "ni" stores the number of players of each position
     (Goalkeeper, Defense, Midfield and Forward) that we have filled
     during the execution of the algorithm.*/
-    int n0 = 0, n1 = 0, n2 = 0, n3 = 0;
     int Price = 0, Points = 0;
-    for(int i = 0; i < Vplayers.size() and not(n0+n1+n2+n3 == 11); ++i){
-        if(Price + Vplayers[i].price <= T){
-            bool choose = false;
-            if((choose = Vplayers[i].position == "por" and n0 == 0)){
-                n0++;
-                por_sol.push_back(Vplayers[i]);
-            }
-            else if((choose = Vplayers[i].position == "def" and n1 < N1)){
-                n1++;
-                def_sol.push_back(Vplayers[i]);
-            }
-            else if((choose = Vplayers[i].position == "mig" and n2 < N2)){
-                n2++;
-                mig_sol.push_back(Vplayers[i]);
-            }
-            else if((choose = Vplayers[i].position == "dav" and n3 < N3)){
-                n3++;
-                dav_sol.push_back(Vplayers[i]);
-            }
-            if(choose){
-                Points += Vplayers[i].points;
-                Price += Vplayers[i].price;
-            }
-        }
-    }
+    fill_position(Vpor, por_sol, Price, Points, 1);
+    fill_position(Vdef, def_sol, Price, Points, N1);
+    fill_position(Vmig, mig_sol, Price, Points, N2);
+    fill_position(Vdav, dav_sol, Price, Points, N3);
     overwrite_solution(Points, Price);
     max_Points = Points;
 }
 
-//prob
-double probability(double T, int Points_s, int Points_sN) {
-    return exp((Points_sN-Points_s)/T);
+// Returns a random number in the interval [l, u].
+int random(int l, int u) {return l + rand() % (u-l+1); }
+
+void change_random(vector<Player>& pos_sol2, int pos){
+    int i; //position of the player we are going to put into our solution.
+    int j; //position of the player we want to change.
+    if(pos == 1){
+        i = random(0,Vpor.size()-1);
+        j = 0;
+        pos_sol2[j] = Vpor[i];
+    } else if(pos == 2){
+        i = random(0,Vdef.size()-1);
+        j = random(0,N1-1);
+        pos_sol2[j] = Vdef[i];
+    } else if(pos == 3){
+        i = random(0,Vmig.size()-1);
+        j = random(0,N2-1);
+        pos_sol2[j] = Vmig[i];
+    } else {
+        i = random(0,Vdav.size()-1);
+        j = random(0,N3-1);
+        pos_sol2[j] = Vdav[i];
+    }
 }
 
-// Returns a random number in the interval [l, u].
-int random(int l, int u) { return l + rand() % (u-l+1); }
+void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
+                   vector<Player>& mig_sol2, vector<Player>& dav_sol2){
+    int i = random(0, 10);
+    if(i == 0){
+        change_random(por_sol,1);
+    }
+    else if(i >= 1 and i<=N1){
+        change_random(def_sol,2);
+    }
+    else if(i >= 1+N1 and i<=N1+N2){
+        change_random(mig_sol,3);
+    }
+    else{
+        change_random(dav_sol,4);
+    }
+}
+
+void count(int& Points, int& Price, const vector<Player>& por_sol,
+           const vector<Player>& def_sol, const vector<Player>& mig_sol,
+           const vector<Player>& dav_sol){
+    Points = 0;
+    Price = 0;
+    for(Player x : por_sol){
+        Points += x.points;
+        Price += x.price;
+    }
+    for(Player x : def_sol){
+        Points += x.points;
+        Price += x.price;
+    }
+    for(Player x : mig_sol){
+        Points += x.points;
+        Price += x.price;
+    }
+    for(Player x : dav_sol){
+        Points += x.points;
+        Price += x.price;
+    }
+}
+
+//prob
+double probability(double T, int Points, int Points2) {
+    return exp((Points2-Points)/T);
+}
 
 /*
 After greedy, variables with val:
@@ -185,44 +258,49 @@ price
 points
 n0, n1, n2, n3
 are full
-
-RESETS: Sometimes it is better to move back to a solution that was significantly better rather than always moving from the current state.
-To do this we set s and e to sbest and ebest and perhaps restart the annealing schedule. Popular criteria: restarting based on a fixed
-number of steps, based on whether the current energy is too high compared to the best energy obtained so far, restarting randomly...
 */
+void improve(double& Temp){
+    int Points, Price; //puntos de sint Price2, Points2;
+    count(Points,Price,por_sol,def_sol,mig_sol,dav_sol);
+    vector<Player> por_sol2 = por_sol, def_sol2 = def_sol,
+                    mig_sol2 = mig_sol, dav_sol2 = dav_sol;
+    //changes one player.
+    find_Neighbor(por_sol2, def_sol2, mig_sol2, dav_sol2);
+    int Points2, Price2;
+    count(Points2,Price2,por_sol2,def_sol2,mig_sol2,dav_sol2);
+    if(Price2 > T) return;
 
-bool improve(double& T){
-    int Points_s = max_Points;//~
-    int Points_sN;
-    find_Neighbor();//escoge un jugador que cambiar
     bool found = false;
-    for (int j = 0; j < Vplayers.size() and not found; j++) {//miramos todos los q salen si cambiamos i
-        //calcular puntos del nuevo team
-        if (Points_s < Points_sN) {
-            found = true;
-            //cambiar el jugador y los puntos
-        } else if (probability(T, Points_s, Points_sN) > double_random_entre(0, 1)) {//podemos hacer trampillas con ints y multiplicar por 100 o algo
-            found = true;
-            //cambiar el jugador y los puntos
-        }
+    if (Points < Points2) {
+        found = true;
+    } else if (probability(T, Points, Points2) > rand()/(RAND_MAX+1.)) {
+        found = true;
     }
+    //cout << probability(T, Points, Points2) << endl;
     if (found) {
-        if (max_Points < Points_s) {
-            int Price = find_Price();
-            max_Points = Points_s;
-            overwrite_solution(max_Points, Price);
+        if (por_sol != por_sol2 or def_sol != def_sol2 or mig_sol != mig_sol2 or dav_sol != dav_sol2) {
+            cout << por_sol2[0].name << endl;
+            for(Player x : def_sol2)cout << x.name << endl;
+            for(Player x : mig_sol2)cout << x.name << endl;
+            for(Player x : dav_sol2)cout << x.name << endl;
         }
+        por_sol=por_sol2; def_sol=def_sol2; mig_sol=mig_sol2; dav_sol=dav_sol2;
+        overwrite_solution(Points2, Price2);
+
     }
-    T *= 0.9;//probar valores e ir calibrando
-    return found;
+    Temp *= 0.9;//probar valores e ir calibrando
 }
 
-void GRASP(){
+void GRASP(){//DUPLICADOS
     //fase1
-    greedy();// ¿lo hacemos generalizado o un solo jugador por posición?
-    double T = 1e9;
+    greedy();
+    double Temp = 10e9;
     //fase2
-    while(improve(T));//se pararía si el jugador seleccionado en el rnd es el mejor para ese caso en concreto
+    long long int k = 100;
+    while (k > 0) {
+        improve(Temp);
+        --k;
+    }
 }
 
 int main(int argc, char** argv) {
