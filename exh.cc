@@ -167,7 +167,7 @@ void generate_exh (int i, int Points, int Price, int Team) {
     Stop when there are no more players left or when the ones remaining won't
     yield a better solution.*/
     if (i >= Vplayers.size() or not valid(Points, i)) return;
-    Player j = Vplayers[i];
+    Player& j = Vplayers[i];
     if (Price + j.price <= T) { //If we can afford the player...
         if (j.position == "por") {
             if (n0 < 1) { //If we need more goalkeepers...
