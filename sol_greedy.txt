@@ -1,0 +1,7 @@
+0.7
+POR: idBis-159
+DEF: idBis-557;idBis-521;idBis-1151
+MIG: idBis-2075;idBis-2700;idBis-1864;idBis-2561;idBis-2336
+DAV: idBis-3481;idBis-3471
+Punts: 1180475
+Preu: 1673482

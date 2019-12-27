@@ -1,7 +1,7 @@
-2.4
-POR: Yoel
-DEF: Aritz;Raúl García;Francis
-MIG: Toni;Sergio Álvarez;Pablo de Blasis;Maksimovic
-DAV: Sobrino;Enes Ünal;
-Punts: 1004
-Preu: 7238821
+10.6
+POR: idBis-178
+DEF: id-505-77;id-660-27;id-505-44
+MIG: id-2289-64;id-2289-93;id-1839-68;id-2289-85;id-2289-32
+DAV: id-2829-69;id-2926-51
+Punts: 1211603
+Preu: 246647067

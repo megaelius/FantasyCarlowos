@@ -1,0 +1,7 @@
+0.0
+POR: Neto
+DEF: Piqué;Siovas;Kiko Olivas
+MIG: Parejo;Campaña;Orellana;Óscar Rodríguez
+DAV: Messi;Jorge Molina;Dembélé
+Punts: 2516
+Preu: 239527809

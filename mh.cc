@@ -32,7 +32,7 @@ struct Player{
     */
     bool operator<(const Player x) const{
         if(price != 0 and x.price != 0){
-            return double(points)/log(price) < double(x.points)/log(x.price);
+            return double(points)/log(price) > double(x.points)/log(x.price);
         }
         else if(price == 0)return false;
         else return true;
@@ -184,8 +184,8 @@ void greedy(){
 // Returns a random number in the interval [l, u].
 int random(int l, int u) {return l + rand() % (u-l+1); }
 
-bool is_in(const vector<Player>& por_sol2, const Player& x){
-    for(Player y : por_sol)if(y == x)return true;
+bool is_in(const vector<Player>& pos_sol, const Player& x){
+    for(Player y : pos_sol)if(y == x)return true;
     return false;
 }
 
@@ -194,7 +194,7 @@ void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
     for(int p = 0; p < 3; ++p){
         int i = random(0, 10);
         int j,k;
-        int Q = 1;
+        int Q = 5;
         if(i == 0){
             j = random(0,Vpor.size()/Q);
             k = 0;
@@ -251,8 +251,8 @@ void count(int& Points, int& Price, const vector<Player>& por_sol,
 }
 
 //prob
-double probability(double T, int Points, int Points2, int Price, int Price2) {
-    return exp(-(Points2-Points)/T);
+double probability(double Temp, int Points, int Points2, int Price, int Price2) {
+    return exp(-(Points-Points2)/Temp);
 }
 
 /*
@@ -279,11 +279,10 @@ void improve(double& Temp){
         found = true;
 
     }
-    else if (probability(T, Points, Points2,Price,Price2) > rand()/(RAND_MAX+1.)){
+    else if (probability(Temp, Points, Points2,Price,Price2) > rand()/(RAND_MAX+1.)){
+        cout << Points - Points2<< "con T = " << Temp << ": " <<probability(Temp, Points, Points2,Price,Price2) << endl;
         found = true;
     }
-    cout << probability(T, Points, Points2,Price,Price2) << endl;
-    //cout << probability(T, Points, Points2) << endl;
     if (found) {
         por_sol=por_sol2; def_sol=def_sol2; mig_sol=mig_sol2; dav_sol=dav_sol2;
         if(max_Points < Points2) {
@@ -291,18 +290,20 @@ void improve(double& Temp){
             max_Points = Points2;
         }
     }
-    Temp *= 0.8;//probar valores e ir calibrando
+    Temp *= 0.99;//probar valores e ir calibrando
 }
 
 void GRASP(){//DUPLICADOS
     //fase1
     greedy();
-    double Temp = 10e9;
+    double Temp = 1000;
     //fase2
-    long long int k = 10e9;
-    while (k > 0) {
+    clock_t end = clock();
+    double time_taken = double(end - start)/CLOCKS_PER_SEC;
+    while (time_taken < 60) {
         improve(Temp);
-        --k;
+        end = clock();
+        time_taken = double(end - start)/CLOCKS_PER_SEC;
     }
 }
 
@@ -327,6 +328,5 @@ int main(int argc, char** argv) {
     }
 
     database_reader(); //Reads players from database and saves them in Vplayers
-
     GRASP();
 }
