@@ -296,7 +296,7 @@ void improve(double& Temp){
 void GRASP(){//DUPLICADOS
     //fase1
     greedy();
-    double Temp = 1000;
+    double Temp = 10e9;
     //fase2
     clock_t end = clock();
     double time_taken = double(end - start)/CLOCKS_PER_SEC;
