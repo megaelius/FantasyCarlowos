@@ -169,9 +169,7 @@ void greedy(){
     def_sol = vector<Player> (0);
     mig_sol = vector<Player> (0);
     dav_sol = vector<Player> (0);
-    /*Each variable "ni" stores the number of players of each position
-    (Goalkeeper, Defense, Midfield and Forward) that we have filled
-    during the execution of the algorithm.*/
+
     int Price = 0, Points = 0;
     fill_position(Vpor, por_sol, Price, Points, 1);
     fill_position(Vdef, def_sol, Price, Points, N1);
@@ -189,44 +187,51 @@ bool is_in(const vector<Player>& pos_sol, const Player& x){
     return false;
 }
 
+/*
+We define a neighborhood as a team that differs fromthe default team on 1
+player. The algorithm chooses a player at random and changes it for a valid one
+that belongs to the top Qth  fraction of players of its position. Valid means the
+player is not already in the team.
+*/
 void find_Neighbor(vector<Player>& por_sol2, vector<Player>& def_sol2,
                    vector<Player>& mig_sol2, vector<Player>& dav_sol2){
-    for(int p = 0; p < 3; ++p){
-        int i = random(0, 10);
-        int j,k;
-        int Q = 5;
-        if(i == 0){
-            j = random(0,Vpor.size()/Q);
-            k = 0;
-            por_sol2[k] = Vpor[j];
-        }
-        else if(i >= 1 and i<=N1){
+    int Q = 3;
+    int i = random(0, 10);
+    int j,k;
+    if(i == 0){
+        j = random(0,Vpor.size()/Q);
+        k = 0;
+        por_sol2[k] = Vpor[j];
+    }
+    else if(i >= 1 and i<=N1){
+        j = random(0,Vdef.size()/Q);
+        while(is_in(def_sol2,Vdef[j])){
             j = random(0,Vdef.size()/Q);
-            while(is_in(def_sol2,Vdef[j])){
-                j = random(0,Vdef.size()/Q);
-            }
-            k = random(0,def_sol2.size()-1);
-            def_sol2[k] = Vdef[j];
         }
-        else if(i >= 1+N1 and i<=N1+N2){
+        k = random(0,def_sol2.size()-1);
+        def_sol2[k] = Vdef[j];
+    }
+    else if(i >= 1+N1 and i<=N1+N2){
+        j = random(0,Vmig.size()/Q);
+        while(is_in(mig_sol2,Vmig[j])){
             j = random(0,Vmig.size()/Q);
-            while(is_in(mig_sol2,Vmig[j])){
-                j = random(0,Vmig.size()/Q);
-            }
-            k = random(0,mig_sol2.size()-1);
-            mig_sol2[k] = Vmig[j];
         }
-        else{
+        k = random(0,mig_sol2.size()-1);
+        mig_sol2[k] = Vmig[j];
+    }
+    else{
+        j = random(0,Vdav.size()/Q);
+        while(is_in(dav_sol2,Vdav[j])){
             j = random(0,Vdav.size()/Q);
-            while(is_in(dav_sol2,Vdav[j])){
-                j = random(0,Vdav.size()/Q);
-            }
-            k = random(0,dav_sol2.size()-1);
-            dav_sol2[k] = Vdav[j];
         }
+        k = random(0,dav_sol2.size()-1);
+        dav_sol2[k] = Vdav[j];
     }
 }
 
+/*
+Calculates the points and price of the given team.
+*/
 void count(int& Points, int& Price, const vector<Player>& por_sol,
            const vector<Player>& def_sol, const vector<Player>& mig_sol,
            const vector<Player>& dav_sol){
@@ -250,7 +255,10 @@ void count(int& Points, int& Price, const vector<Player>& por_sol,
     }
 }
 
-//prob
+/*
+Function of probability over which we choose a worse solution as our current
+solution for the simulated anealing.
+*/
 double probability(double Temp, int Points, int Points2) {
     return exp(-(Points-Points2)/Temp);
 }
@@ -280,7 +288,6 @@ void improve(double& Temp){
 
     }
     else if (probability(Temp, Points, Points2) > rand()/(RAND_MAX+1.)){
-        cout << Points - Points2<< "con T = " << Temp << ": " <<probability(Temp, Points, Points2,Price,Price2) << endl;
         found = true;
     }
     if (found) {
@@ -290,9 +297,16 @@ void improve(double& Temp){
             max_Points = Points2;
         }
     }
-    Temp *= 0.99;//probar valores e ir calibrando
+    Temp *= 0.99;
 }
 
+/*
+Fase 1 finds an initial solution using the greedy algorithm.
+Fase 2 improves this solution with simulated anealing. Since the time given
+for the runtime of the algorithm is 60, this is the time we will allow the code
+to search. It could also stop when Temp gets to a very small value but the 60 have
+been chosen to maximize the search time.
+*/
 void GRASP(){
     //fase1
     greedy();
@@ -308,7 +322,6 @@ void GRASP(){
 }
 
 int main(int argc, char** argv) {
-
     if (argc != 4) {
         cout << "Syntax: " << argv[0] << " data_base.txt"
         << " requirements_file.txt" << "output_file.txt" << endl;
@@ -328,5 +341,7 @@ int main(int argc, char** argv) {
     }
 
     database_reader(); //Reads players from database and saves them in Vplayers
+
     GRASP();
+
 }

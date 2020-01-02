@@ -1,7 +1,7 @@
-42.9
-POR: idBis-178
-DEF: id-372-52;id-505-38;id-372-69
-MIG: id-1839-52;id-1839-98;id-1839-28;id-2289-82;id-1839-72
-DAV: id-2829-69;id-2829-52
-Punts: 1212654
-Preu: 243423017
+8.1
+POR: idBis-186
+DEF: idBis-589;idBis-1490;idBis-458;idBis-1404
+MIG: id-2131-64;idBis-2358;idBis-2164;fake-mig-4
+DAV: id-3019-83;id-3019-78
+Punts: 1095057
+Preu: 249999954
