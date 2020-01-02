@@ -251,7 +251,7 @@ void count(int& Points, int& Price, const vector<Player>& por_sol,
 }
 
 //prob
-double probability(double Temp, int Points, int Points2, int Price, int Price2) {
+double probability(double Temp, int Points, int Points2) {
     return exp(-(Points-Points2)/Temp);
 }
 
@@ -279,7 +279,7 @@ void improve(double& Temp){
         found = true;
 
     }
-    else if (probability(Temp, Points, Points2,Price,Price2) > rand()/(RAND_MAX+1.)){
+    else if (probability(Temp, Points, Points2) > rand()/(RAND_MAX+1.)){
         cout << Points - Points2<< "con T = " << Temp << ": " <<probability(Temp, Points, Points2,Price,Price2) << endl;
         found = true;
     }
@@ -293,7 +293,7 @@ void improve(double& Temp){
     Temp *= 0.99;//probar valores e ir calibrando
 }
 
-void GRASP(){//DUPLICADOS
+void GRASP(){
     //fase1
     greedy();
     double Temp = 10e9;
