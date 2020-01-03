@@ -322,6 +322,8 @@ void GRASP(){
 }
 
 int main(int argc, char** argv) {
+    int rs = time(NULL);
+    srand(rs);
     if (argc != 4) {
         cout << "Syntax: " << argv[0] << " data_base.txt"
         << " requirements_file.txt" << "output_file.txt" << endl;
