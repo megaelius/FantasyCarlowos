@@ -303,8 +303,8 @@ void improve(double& Temp){
 /*
 Fase 1 finds an initial solution using the greedy algorithm.
 Fase 2 improves this solution with simulated anealing. Since the time given
-for the runtime of the algorithm is 60, this is the time we will allow the code
-to search. It could also stop when Temp gets to a very small value but the 60 have
+for the runtime of the algorithm is 60s, this is the time we will allow the code
+to search. It could also stop when Temp gets to a very small value but the 60s have
 been chosen to maximize the search time.
 */
 void GRASP(){
